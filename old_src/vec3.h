@@ -11,47 +11,48 @@ typedef struct ray3 {
     point3 origin;
     vec3 direction;
 
-  __device__ inline point3 operator()(float t) const {
+    __device__ inline point3 operator()( float t ) const {
         return origin + t * direction;
     }
 } ray3;
 
 __host__ __device__
 
-float dot(const vec3 &u, const vec3 &v) {
+    float
+    dot( const vec3& u, const vec3& v ) {
     return u.x * v.x + u.y * v.y + u.z * v.z;
 }
 
-__host__ __device__
-float length(const vec3 &v) { return sqrtf(dot(v, v)); }
-
-__host__ __device__ vec3 cross(const vec3 &u, const vec3 &v) {
-    return make_float3(u.y * v.z - u.z * v.y, u.z * v.x - u.x * v.z,
-                       u.x * v.y - u.y * v.x);
+__host__ __device__ float length( const vec3& v ) {
+    return sqrtf( dot( v, v ) );
 }
 
-__host__ __device__ vec3 unit_vector(const vec3 &v) { return v / length(v); }
-
-__host__ __device__ vec3 sqrt(const vec3 &v) {
-    return vec3({sqrtf(v.x), sqrtf(v.y), sqrtf(v.z)});
+__host__ __device__ vec3 cross( const vec3& u, const vec3& v ) {
+    return make_float3( u.y * v.z - u.z * v.y, u.z * v.x - u.x * v.z, u.x * v.y - u.y * v.x );
 }
 
-__device__ inline vec3 randomVec3(hiprandState *local_rand_state) {
-    return {
-        hiprand_uniform(local_rand_state), hiprand_uniform(local_rand_state),
-        hiprand_uniform(local_rand_state)
-    };
+__host__ __device__ vec3 unit_vector( const vec3& v ) {
+    return v / length( v );
 }
 
-__device__ vec3 reflect(const vec3 &vec, const point3 &point) {
-    return vec - 2.0f * dot(vec, point) * point;
+__host__ __device__ vec3 sqrt( const vec3& v ) {
+    return vec3( { sqrtf( v.x ), sqrtf( v.y ), sqrtf( v.z ) } );
 }
 
-__device__ vec3 randomUnitVec3(hiprandState *local_rand_state) {
+__device__ inline vec3 randomVec3( hiprandState* local_rand_state ) {
+    return { hiprand_uniform( local_rand_state ), hiprand_uniform( local_rand_state ),
+             hiprand_uniform( local_rand_state ) };
+}
+
+__device__ vec3 reflect( const vec3& vec, const point3& point ) {
+    return vec - 2.0f * dot( vec, point ) * point;
+}
+
+__device__ vec3 randomUnitVec3( hiprandState* local_rand_state ) {
     vec3 p;
     do {
-        p = 2.0f * randomVec3(local_rand_state) - vec3(1, 1, 1);
-    } while (dot(p, p) >= 1.0f);
+        p = 2.0f * randomVec3( local_rand_state ) - vec3( 1, 1, 1 );
+    } while ( dot( p, p ) >= 1.0f );
     return p;
 }
 

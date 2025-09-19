@@ -5,16 +5,18 @@
 
 #include <iostream>
 
-#define checkHipErrors(val) hipErrCheck((val), #val, __FILE__, __LINE__)
+#define checkHipErrors( val ) hipErrCheck( ( val ), #val, __FILE__, __LINE__ )
 
-void hipErrCheck(hipError_t result, char const *const func,
-                 const char *const file, int const line) {
-    if (result) {
-        std::cerr << "HIP error = " << static_cast<unsigned int>(result) << " at "
-                << file << ":" << line << " '" << func << "' \n";
+void hipErrCheck( hipError_t result,
+                  char const* const func,
+                  const char* const file,
+                  int const line ) {
+    if ( result ) {
+        std::cerr << "HIP error = " << static_cast<unsigned int>( result ) << " at " << file << ":"
+                  << line << " '" << func << "' \n";
         // Make sure we call HIP Device Reset before exiting
         std::cerr << "Calling hipDeviceReset: " << hipDeviceReset() << std::endl;
-        exit(99);
+        exit( 99 );
     }
 }
 
