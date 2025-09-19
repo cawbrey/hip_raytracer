@@ -17,7 +17,8 @@ if (BUILD_TESTS)
     find_package(GTest REQUIRED)
     find_package(Threads REQUIRED)
 
-    add_executable(raytracer_test test/hello_world_test.cpp)
+    add_executable(raytracer_test
+            test/math_test.cpp)
     target_link_libraries(raytracer_test PRIVATE GTest::gtest_main Threads::Threads)
     include(GoogleTest)
     gtest_discover_tests(raytracer_test)
