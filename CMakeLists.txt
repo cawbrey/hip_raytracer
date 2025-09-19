@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_executable(raytracer src/main.cpp
         src/hello_world.cpp
+        src/math.cpp
 )
 target_include_directories(raytracer PUBLIC include)
 

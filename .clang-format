@@ -1,7 +1,7 @@
-BasedOnStyle: Google
+BasedOnStyle: Chromium
 IndentWidth: 4
-UseTab: Always
 PointerAlignment: Left
 SortIncludes: true
 SpacesInParentheses: true
-AllowShortFunctionsOnASingleLine: InlineOnly
+AllowShortFunctionsOnASingleLine: None
+ColumnLimit: 100
