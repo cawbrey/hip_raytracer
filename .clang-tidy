@@ -1,0 +1,18 @@
+Checks: >
+  bugprone-*,
+  performance-*,
+  readability-*,
+  modernize-*,
+  cppcoreguidelines-*,
+  -cppcoreguidelines-avoid-magic-numbers,
+  -cppcoreguidelines-owning-memory,
+  -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
+  -cppcoreguidelines-pro-type-vararg,
+  -modernize-use-trailing-return-type
+
+WarningsAsErrors: bugprone-*,performance-*,modernize-*
+
+HeaderFilterRegex: 'src/|include/'
+
+AnalyzeTemporaryDtors: false
+FormatStyle: none

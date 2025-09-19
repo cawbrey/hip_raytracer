@@ -11,33 +11,36 @@ typedef struct ray3 {
     point3 origin;
     vec3 direction;
 
-    __device__ inline point3 operator()(float t) const {
+  __device__ inline point3 operator()(float t) const {
         return origin + t * direction;
     }
 } ray3;
 
-__host__ __device__ float dot(const vec3 &u, const vec3 &v) {
+__host__ __device__
+
+float dot(const vec3 &u, const vec3 &v) {
     return u.x * v.x + u.y * v.y + u.z * v.z;
 }
 
-__host__ __device__ float length(const vec3 &v) {
-    return sqrtf(dot(v, v));
-}
+__host__ __device__
+float length(const vec3 &v) { return sqrtf(dot(v, v)); }
 
 __host__ __device__ vec3 cross(const vec3 &u, const vec3 &v) {
-    return make_float3(u.y * v.z - u.z * v.y, u.z * v.x - u.x * v.z, u.x * v.y - u.y * v.x);
+    return make_float3(u.y * v.z - u.z * v.y, u.z * v.x - u.x * v.z,
+                       u.x * v.y - u.y * v.x);
 }
 
-__host__ __device__ vec3 unit_vector(const vec3 &v) {
-    return v / length(v);
-}
+__host__ __device__ vec3 unit_vector(const vec3 &v) { return v / length(v); }
 
 __host__ __device__ vec3 sqrt(const vec3 &v) {
     return vec3({sqrtf(v.x), sqrtf(v.y), sqrtf(v.z)});
 }
 
 __device__ inline vec3 randomVec3(hiprandState *local_rand_state) {
-    return {hiprand_uniform(local_rand_state), hiprand_uniform(local_rand_state), hiprand_uniform(local_rand_state)};
+    return {
+        hiprand_uniform(local_rand_state), hiprand_uniform(local_rand_state),
+        hiprand_uniform(local_rand_state)
+    };
 }
 
 __device__ vec3 reflect(const vec3 &vec, const point3 &point) {
@@ -55,7 +58,8 @@ __device__ vec3 randomUnitVec3(hiprandState *local_rand_state) {
 /*class vec3  {
 public:
     __host__ __device__ vec3() {}
-    __host__ __device__ vec3(float e0, float e1, float e2) { e[0] = e0; e[1] = e1; e[2] = e2; }
+    __host__ __device__ vec3(float e0, float e1, float e2) { e[0] = e0; e[1] =
+e1; e[2] = e2; }
     __host__ __device__ inline float x() const { return e[0]; }
     __host__ __device__ inline float y() const { return e[1]; }
     __host__ __device__ inline float z() const { return e[2]; }
@@ -64,7 +68,8 @@ public:
     __host__ __device__ inline float b() const { return e[2]; }
 
     __host__ __device__ inline const vec3& operator+() const { return *this; }
-    __host__ __device__ inline vec3 operator-() const { return vec3(-e[0], -e[1], -e[2]); }
+    __host__ __device__ inline vec3 operator-() const { return vec3(-e[0],
+-e[1], -e[2]); }
     __host__ __device__ inline float operator[](int i) const { return e[i]; }
     __host__ __device__ inline float& operator[](int i) { return e[i]; };
 
@@ -75,8 +80,10 @@ public:
     __host__ __device__ inline vec3& operator*=(const float t);
     __host__ __device__ inline vec3& operator/=(const float t);
 
-    __host__ __device__ inline float length() const { return sqrt(e[0]*e[0] + e[1]*e[1] + e[2]*e[2]); }
-    __host__ __device__ inline float squared_length() const { return e[0]*e[0] + e[1]*e[1] + e[2]*e[2]; }
+    __host__ __device__ inline float length() const { return sqrt(e[0]*e[0] +
+e[1]*e[1] + e[2]*e[2]); }
+    __host__ __device__ inline float squared_length() const { return e[0]*e[0] +
+e[1]*e[1] + e[2]*e[2]; }
     __host__ __device__ inline void make_unit_vector();
 
 

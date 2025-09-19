@@ -4,7 +4,7 @@
 #include "Hittable.h"
 
 class sphere : public Hittable {
-    __device__ static void uv(const point3 &p, float &u, float &v) {
+  __device__ static void uv(const point3 &p, float &u, float &v) {
         float phi = atan2(p.z, p.x) + M_PI;
         float theta = acos(-p.y);
 
@@ -15,10 +15,12 @@ class sphere : public Hittable {
 public:
     __device__ sphere(vec3 cen, float r, Material *m) : center(cen), radius(r) {
         mat_ptr = m;
-        boundingBox = BoundingBox(center - vec3(radius, radius, radius), center + vec3(radius, radius, radius));
+        boundingBox = BoundingBox(center - vec3(radius, radius, radius),
+                                  center + vec3(radius, radius, radius));
     };
 
-    __device__ bool hit(const ray3 &r, float tmin, float tmax, HitRecord &rec) const override {
+  __device__ bool hit(const ray3 &r, float tmin, float tmax,
+                      HitRecord &rec) const override {
         vec3 oc = r.origin - center;
 
         float a = dot(r.direction, r.direction);
@@ -54,7 +56,8 @@ public:
     float radius;
 };
 
-//__device__ bool sphere::hit(const ray3 &r, float t_min, float t_max, hit_record &rec) const {
+//__device__ bool sphere::hit(const ray3 &r, float t_min, float t_max,
+//hit_record &rec) const {
 //
 //    vec3 oc = r.origin - center;
 //    float a = dot(r.direction, r.direction);
@@ -81,6 +84,5 @@ public:
 //    }
 //    return false;
 //}
-
 
 #endif

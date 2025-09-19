@@ -1,8 +1,8 @@
 #ifndef HITABLEH
 #define HITABLEH
 
-#include "vec3.h"
 #include "BoundingBox.h"
+#include "vec3.h"
 
 class Material;
 
@@ -23,7 +23,8 @@ public:
 
     __device__ virtual ~Hittable() = default;
 
-    __device__ virtual bool hit(const ray3 &r, float t_min, float t_max, HitRecord &rec) const = 0;
+  __device__ virtual bool hit(const ray3 &r, float t_min, float t_max,
+                              HitRecord &rec) const = 0;
 };
 
 #endif
