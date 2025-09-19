@@ -2,7 +2,7 @@
 #include <random>
 #define FLOAT_T float
 
-typedef struct vector {
+struct Vector {
     union {
         struct {
             FLOAT_T x1, x2, x3;
@@ -10,79 +10,78 @@ typedef struct vector {
         struct {
             FLOAT_T x, y, z;
         };
-        FLOAT_T data[3];
     };
 
-    vector operator+( const FLOAT_T v ) const {
-        return vector{ x + v, y + v, z + v };
+    auto operator+( const FLOAT_T input ) const {
+        return Vector{ x + input, y + input, z + input };
     }
 
-    vector operator-( const FLOAT_T v ) const {
-        return vector{ x - v, y - v, z - v };
+    auto operator-( const FLOAT_T input ) const {
+        return Vector{ x - input, y - input, z - input };
     }
 
-    vector operator*( const FLOAT_T v ) const {
-        return vector{ x * v, y * v, z * v };
+    auto operator*( const FLOAT_T input ) const {
+        return Vector{ x * input, y * input, z * input };
     }
 
-    vector operator/( const FLOAT_T v ) const {
-        return vector{ x / v, y / v, z / v };
+    auto operator/( const FLOAT_T input ) const {
+        return Vector{ x / input, y / input, z / input };
     }
 
-    vector operator-() const {
-        return vector{ -x, -y, -z };
+    auto operator-() const {
+        return Vector{ -x, -y, -z };
     }
 
-    vector operator+( const vector& v ) const {
-        return vector{ x + v.x, y + v.y, z + v.z };
+    auto operator+( const Vector& input ) const {
+        return Vector{ x + input.x, y + input.y, z + input.z };
     }
 
-    vector operator-( const vector& v ) const {
-        return vector{ x - v.x, y - v.y, z - v.z };
+    auto operator-( const Vector& input ) const {
+        return Vector{ x - input.x, y - input.y, z - input.z };
     }
 
-    vector operator*( const vector& v ) const {
-        return vector{ x * v.x, y * v.y, z * v.z };
+    auto operator*( const Vector& input ) const {
+        return Vector{ x * input.x, y * input.y, z * input.z };
     }
 
-    vector operator/( const vector& v ) const {
-        return vector{ x / v.x, y / v.y, z / v.z };
+    auto operator/( const Vector& input ) const {
+        return Vector{ x / input.x, y / input.y, z / input.z };
     }
 
-    [[nodiscard]] FLOAT_T dot( const vector& v ) const {
-        return x * v.x + y * v.y + z * v.z;
+    [[nodiscard]] auto dot( const Vector& input ) const {
+        return (x * input.x) + (y * input.y) + (z * input.z);
     }
 
-    [[nodiscard]] vector cross( const vector& v ) const {
-        return vector{ y * v.z - z * v.y, z * v.x - x * v.z, x * v.y - y * v.x };
+    [[nodiscard]] auto cross( const Vector& input ) const {
+        return Vector{ (y * input.z) - (z * input.y), (z * input.x) - (x * input.z), (x * input.y) - (y * input.x) };
     }
 
-    [[nodiscard]] FLOAT_T length() const {
-        return std::sqrt( x * x + y * y + z * z );
+    [[nodiscard]] auto length() const {
+        return std::sqrt( (x * x) + (y * y) + (z * z) );
     }
 
-    [[nodiscard]] vector normalized() const {
+    [[nodiscard]] auto normalized() const {
         return *this / length();
     }
-} vector_t;
+};
 
-typedef struct ray {
-    vector origin;
-    vector direction;
-} ray_t;
+struct Ray {
+    Vector origin;
+    Vector direction;
+};
 
-FLOAT_T rand_float( const FLOAT_T lower = -1.0f, const FLOAT_T upper = 1.0f ) {
-    static std::random_device rd;
-    static std::mt19937 gen( rd() );
+auto rand_float( const FLOAT_T lower = -1.0F, const FLOAT_T upper = 1.0F ) -> FLOAT_T {
+    static std::random_device randomDevice;
+    static std::mt19937 gen( randomDevice() );
     std::uniform_real_distribution dist( lower, upper );
     return dist( gen );
 }
 
-vector random_vector( const FLOAT_T lower = -1.0f, const FLOAT_T upper = 1.0f ) {
-    return vector{ rand_float( lower, upper ), rand_float( lower, upper ),
+auto random_vector( const FLOAT_T lower = -1.0F, const FLOAT_T upper = 1.0F ) -> Vector {
+    return Vector{ rand_float( lower, upper ), rand_float( lower, upper ),
                    rand_float( lower, upper ) };
 }
 
-vector random_unit_vector() {
+auto random_unit_vector() -> Vector {
     return random_vector().normalized();
 }
