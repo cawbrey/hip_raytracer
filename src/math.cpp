@@ -1,21 +1,27 @@
 #pragma once
 #include <glm/vec3.hpp>
 #include <glm/gtc/quaternion.hpp>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/fast_square_root.hpp>
+#include <glm/gtx/intersect.hpp>
 
 #define FLOAT_T float
 
 struct Ray {
     glm::vec3 origin;
     glm::vec3 direction;
+
+    Ray(auto origin, auto direction) :
+        origin(origin),
+        direction(glm::normalize(direction)) {}
 };
 
 struct Pose {
     glm::vec3 position;
-    glm::quat rotation;
+    glm::quat orientation;
 };
 
-//
-//
+
 // inline auto rand_float( const FLOAT_T lower = -1.0F, const FLOAT_T upper = 1.0F ) -> FLOAT_T {
 //     static std::random_device randomDevice;
 //     static std::mt19937 gen( randomDevice() );

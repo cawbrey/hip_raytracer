@@ -10,22 +10,31 @@ int main(int argc, char *argv[]) {
     const int HEIGHT = 1080;
     const auto start_time = std::chrono::system_clock::now();
 
-    const Camera camera({{0,0,0},{0,0,0,1}}, 90.0F, 58.625F);
+    const Camera camera({{0,0,0},{0,0,0,1}}, 1);
 
-    const Sphere sphereX({5, 0, 0}, 1, {255, 0, 0});
-    const Sphere sphereY({0, 5, 0}, 1, {0, 255, 0});
-    const Sphere sphereZ({0, 0, 5}, 1, {0, 0, 255});
-    const Sphere sphereNX({-5, 0, 0}, 1, {255, 255, 0});
-    const Sphere sphereNY({0, -5, 0}, 1, {255, 0, 255});
-    const Sphere sphereNZ({0, 0, -5}, 1, {0, 255, 255});
-
-    const World world{std::vector{sphereX, sphereY, sphereZ, sphereNX, sphereNY, sphereNZ}};
+    const World world{std::vector{
+        Sphere{{0, 0, 5}, 1, {0, 255, 0}},
+        Sphere{{3, 0, 5}, 1, {255, 255, 0}},
+        Sphere{{-3, 0, 5}, 1, {255, 0, 0}},
+        Sphere{{0, 3, 5}, 1, {0, 0, 255}},
+        Sphere{{0, -3, 5}, 1, {255, 0, 255}},
+    }};
 
     auto image = std::make_unique<std::array<std::array<glm::u8vec3, HEIGHT>, WIDTH> >();
 
+    const float AR = (float)WIDTH / (float)HEIGHT;
+    const float HALF_WIDTH_SPAN = AR / 2;
+    const float HALF_HEIGHT_SPAN = 1.0F / 2;
+
     for (int y = 0; y < HEIGHT; ++y) {
         for (int x = 0; x < WIDTH; ++x) {
-            const auto cameraRay = camera.get_ray(x / (WIDTH - 1.0F), y / (HEIGHT - 1.0F));
+            const float x_norm = x / (float)WIDTH;
+            const float y_norm = y / (float)HEIGHT;
+
+            const float u = (2.0F * x_norm - 1.0F) * HALF_WIDTH_SPAN;
+            const float v = (2.0F * y_norm - 1.0F) * HALF_HEIGHT_SPAN;
+
+            const auto cameraRay = camera.get_ray(u, v);
             const auto worldHit = world.cast_ray(cameraRay);
 
             if (worldHit == std::nullopt) {
