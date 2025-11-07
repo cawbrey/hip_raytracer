@@ -3,24 +3,24 @@
 #include "math.cpp"
 
 class Sphere {
-    Vector3 color;
-    Vector3 center;
-    FLOAT_T radius;
-
 public:
+    const glm::u8vec3 color;
+    const glm::vec3 center;
+    const FLOAT_T radius;
+
     Sphere(
-        const Vector3& center,
+        const glm::vec3& center,
         const FLOAT_T radius,
-        const Vector3& color)
+        const glm::u8vec3& color)
         : color(color), center(center), radius(radius) {
     }
 
-    [[nodiscard]] auto hit(const Ray& r, FLOAT_T t_min, FLOAT_T t_max) const -> std::optional<std::tuple<FLOAT_T, Vector3>> {
+    [[nodiscard]] auto hit(const Ray& r, FLOAT_T t_min, FLOAT_T t_max) const -> std::optional<FLOAT_T> {
         // Ray-sphere intersection using quadratic formula
-        Vector3 oc = r.origin - center;
-        FLOAT_T a = r.direction.dot(r.direction);
-        FLOAT_T b = 2.0f * oc.dot(r.direction);
-        FLOAT_T c = oc.dot(oc) - (radius * radius);
+        glm::vec3 oc = r.origin - center;
+        FLOAT_T a = dot(r.direction, r.direction);
+        FLOAT_T b = 2.0f * dot(oc, r.direction);
+        FLOAT_T c = dot(oc, oc) - (radius * radius);
         FLOAT_T discriminant = b * b - 4 * a * c;
 
         if (discriminant < 0) {

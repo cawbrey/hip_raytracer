@@ -8,19 +8,20 @@
 int main(int argc, char *argv[]) {
     const int WIDTH = 1920;
     const int HEIGHT = 1080;
+    const auto start_time = std::chrono::system_clock::now();
 
     const Camera camera({{0,0,0},{0,0,0,1}}, 90.0F, 58.625F);
 
-    const Sphere sphereX({5,0,0}, 1);
-    const Sphere sphereY({0,5,0}, 1);
-    const Sphere sphereZ({0,0,5}, 1);
-    const Sphere sphereNX({-5,0,0}, 1);
-    const Sphere sphereNY({0,-5,0}, 1);
-    const Sphere sphereNZ({0,0,-5}, 1);
+    const Sphere sphereX({5, 0, 0}, 1, {255, 0, 0});
+    const Sphere sphereY({0, 5, 0}, 1, {0, 255, 0});
+    const Sphere sphereZ({0, 0, 5}, 1, {0, 0, 255});
+    const Sphere sphereNX({-5, 0, 0}, 1, {255, 255, 0});
+    const Sphere sphereNY({0, -5, 0}, 1, {255, 0, 255});
+    const Sphere sphereNZ({0, 0, -5}, 1, {0, 255, 255});
 
     const World world{std::vector{sphereX, sphereY, sphereZ, sphereNX, sphereNY, sphereNZ}};
 
-    auto image = std::make_unique<std::array<std::array<Vector3, HEIGHT>, WIDTH> >();
+    auto image = std::make_unique<std::array<std::array<glm::u8vec3, HEIGHT>, WIDTH> >();
 
     for (int y = 0; y < HEIGHT; ++y) {
         for (int x = 0; x < WIDTH; ++x) {
@@ -28,13 +29,15 @@ int main(int argc, char *argv[]) {
             const auto worldHit = world.cast_ray(cameraRay);
 
             if (worldHit == std::nullopt) {
-                (*image)[x][y] = {0,0,0};
+                image->at(x).at(y) = {0,0,0};
                 continue;
             }
 
-            (*image)[x][y] = {1,1,1};
+            image->at(x).at(y) = worldHit.value().first->color;
         }
     }
+
+    std::cout << "Time taken: " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - start_time).count() / 1000.0F << "Seconds" << std::endl;
 
 
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
