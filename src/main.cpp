@@ -1,50 +1,54 @@
 #include <SDL.h>
 #include <iostream>
+
 #include "math.cpp"
 #include "camera.cpp"
 #include "world.cpp"
+#include "parallel.cpp"
 
 
 int main(int argc, char *argv[]) {
-    const int WIDTH = 1920;
-    const int HEIGHT = 1080;
+    constexpr auto WIDTH = 1280;
+    constexpr auto HEIGHT = 720;
     const auto start_time = std::chrono::system_clock::now();
 
-    const Camera camera({{0,0,0},{0,0,0,1}}, 1);
+    const Camera camera({{0,2,0},{0, 0, -0.0871557,0.9961947}}, 1);
 
     const World world{std::vector{
-        Sphere{{0, 0, 5}, 1, {0, 255, 0}},
-        Sphere{{3, 0, 5}, 1, {255, 255, 0}},
-        Sphere{{-3, 0, 5}, 1, {255, 0, 0}},
-        Sphere{{0, 3, 5}, 1, {0, 0, 255}},
-        Sphere{{0, -3, 5}, 1, {255, 0, 255}},
+        Sphere{{0, 790'400'000, 0}, 693'000'000, {0.9, 0.9, 0.9}, {0.95, 0.95, 0.95}},
+        Sphere{{0, -6'300'000, 0}, 6'300'000, {0.25, 0.25, 0.25}, {0, 0, 0}},
+        Sphere{{-1.75, 1.25, 5}, 1, {0.9, 0, 0}, {0, 0, 0}},
+        Sphere{{1.25, 1, 5}, 1, {0.9, 0.9, 0}, {0, 0, 0}},
     }};
 
-    auto image = std::make_unique<std::array<std::array<glm::u8vec3, HEIGHT>, WIDTH> >();
+    auto image = std::make_unique<std::array<std::array<vec3, HEIGHT>, WIDTH> >();
 
-    const float AR = (float)WIDTH / (float)HEIGHT;
-    const float HALF_WIDTH_SPAN = AR / 2;
-    const float HALF_HEIGHT_SPAN = 1.0F / 2;
+    constexpr auto AR = (flt)WIDTH / HEIGHT;
+    constexpr auto HALF_WIDTH_SPAN = AR / 2;
+    constexpr auto HALF_HEIGHT_SPAN = 1.0 / 2;
 
-    for (int y = 0; y < HEIGHT; ++y) {
+
+    parallel_for_rows(0, HEIGHT, HEIGHT, [&](int y) {
         for (int x = 0; x < WIDTH; ++x) {
-            const float x_norm = x / (float)WIDTH;
-            const float y_norm = y / (float)HEIGHT;
 
-            const float u = (2.0F * x_norm - 1.0F) * HALF_WIDTH_SPAN;
-            const float v = (2.0F * y_norm - 1.0F) * HALF_HEIGHT_SPAN;
+            vec3 color(0.0f);
 
-            const auto cameraRay = camera.get_ray(u, v);
-            const auto worldHit = world.cast_ray(cameraRay);
+            const uint samples = 50;
 
-            if (worldHit == std::nullopt) {
-                image->at(x).at(y) = {0,0,0};
-                continue;
+            for (uint i = 0; i < samples; ++i) {
+                float u = (2.0f * x / WIDTH - 1.0f) * HALF_WIDTH_SPAN;
+                float v = (2.0f * y / HEIGHT - 1.0f) * HALF_HEIGHT_SPAN;
+
+                auto cameraRay = camera.get_ray(u, v);
+
+                color += world.trace_ray(cameraRay);
             }
 
-            image->at(x).at(y) = worldHit.value().first->color;
+            color /= float(samples);
+
+            image->at(x).at(y) = color;
         }
-    }
+    });
 
     std::cout << "Time taken: " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - start_time).count() / 1000.0F << "Seconds" << std::endl;
 
@@ -99,9 +103,9 @@ int main(int argc, char *argv[]) {
         for (int x = 0; x < WIDTH; ++x) {
             // Clamp and convert color to 0-255
             auto col = (*image)[x][y];
-            uint8_t r = static_cast<uint8_t>(std::min(std::max(col.x * 255.0f, 0.0f), 255.0f));
-            uint8_t g = static_cast<uint8_t>(std::min(std::max(col.y * 255.0f, 0.0f), 255.0f));
-            uint8_t b = static_cast<uint8_t>(std::min(std::max(col.z * 255.0f, 0.0f), 255.0f));
+            uint8_t r = col.r * SDL_MAX_UINT8;
+            uint8_t g = col.g * SDL_MAX_UINT8;
+            uint8_t b = col.b * SDL_MAX_UINT8;
             uint8_t a = 255;
 
             pixels32[y * (pitch / 4) + x] = (a << 24) | (r << 16) | (g << 8) | b;
@@ -121,6 +125,12 @@ int main(int argc, char *argv[]) {
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT)
                 running = false;
+            else if (event.type == SDL_MOUSEBUTTONDOWN) {
+                if (event.button.button == SDL_BUTTON_LEFT) {
+                    std::cout << "Clicked at position: (" << event.button.x << ", " << event.button.y << ")" <<
+                            std::endl;
+                }
+            }
         }
     }
 

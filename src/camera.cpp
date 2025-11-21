@@ -2,26 +2,22 @@
 #include "math.cpp"
 
 class Camera {
-    glm::mat3 _direction_matrix;
+    mat3 _direction_matrix;
 
 public:
     Pose pose;
 
-    Camera(const Pose& pose_, const FLOAT_T focal_length)
-        : pose(pose_)
+    Camera(const Pose& pose, const flt focal_length)
+        : pose(pose)
     {
-        glm::vec3 right   = pose.orientation * glm::vec3(1, 0, 0);
-        glm::vec3 up      = pose.orientation * glm::vec3(0, 1, 0);
-        glm::vec3 forward = pose.orientation * glm::vec3(0, 0, -focal_length);
-
-        _direction_matrix = glm::mat3(
-            right,
-            up,
-            forward
+        _direction_matrix = mat3(
+            pose.orientation * vec3(1, 0, 0),
+            pose.orientation * vec3(0, 1, 0),
+            pose.orientation * vec3(0, 0, -focal_length)
         );
     }
 
-    Ray get_ray(FLOAT_T u, FLOAT_T v) const {
-        return Ray(pose.position, _direction_matrix * glm::vec3(u, v, -1));
+    Ray get_ray(const flt u, const flt v) const {
+        return Ray(pose.position, _direction_matrix * vec3(u, v, -1));
     }
 };
